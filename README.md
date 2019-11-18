@@ -1,8 +1,19 @@
 ### graphql-apollo-practice
 [Link to tutorial](https://www.apollographql.com/docs/tutorial/introduction/)
 
+[graphql cheat sheet](https://devhints.io/graphql#schema)
 
 Part 6 in my deep dive series on graphql, apollo, and prisma.
+
+---
+
+##### Notes
+
+> We recommend that teams practice Schema First Development and agree upon the schema first before any API development begins.
+
+> A scalar type is a primitive type like ID, String, Boolean, or Int. You can define custom scalars, like Date.
+
+
 
 ---
 
