@@ -1,5 +1,5 @@
-const { DataSource } = require('apollo-datasource');
-const isEmail = require('isemail');
+const { DataSource } = require("apollo-datasource");
+const isEmail = require("isemail");
 
 class UserAPI extends DataSource {
   constructor({ store }) {
@@ -7,15 +7,29 @@ class UserAPI extends DataSource {
     this.store = store;
   }
 
+  // A graph API's context is an object that's shared among every resolver in a GraphQL request.
+  // We're going to explain this in more detail in the next section.
+  // Right now, all you need to know is that the context is useful for storing user information.
+
+
   /**
    * This is a function that gets called by ApolloServer when being setup.
    * This function gets called with the datasource config including things
    * like caches and context. We'll assign this.context to the request context
    * here, so we can know about the user making requests
    */
+  // Important
+  // If you use this.context in your datasource,
+  // it's critical to create a new instance in the dataSources function
+  // and to not share a single instance. Otherwise, initialize may be called during the
+  // execution of asynchronous code for a specific user, and replace the this.context by the
+  // context of another user.
   initialize(config) {
     this.context = config.context;
   }
+  ////
+
+
 
   /**
    * User can be called with an argument that includes email, but it doesn't
@@ -30,6 +44,9 @@ class UserAPI extends DataSource {
     const users = await this.store.users.findOrCreate({ where: { email } });
     return users && users[0] ? users[0] : null;
   }
+  ////
+
+  
 
   async bookTrips({ launchIds }) {
     const userId = this.context.user.id;
@@ -50,7 +67,7 @@ class UserAPI extends DataSource {
   async bookTrip({ launchId }) {
     const userId = this.context.user.id;
     const res = await this.store.trips.findOrCreate({
-      where: { userId, launchId },
+      where: { userId, launchId }
     });
     return res && res.length ? res[0].get() : false;
   }
@@ -63,7 +80,7 @@ class UserAPI extends DataSource {
   async getLaunchIdsByUser() {
     const userId = this.context.user.id;
     const found = await this.store.trips.findAll({
-      where: { userId },
+      where: { userId }
     });
     return found && found.length
       ? found.map(l => l.dataValues.launchId).filter(l => !!l)
@@ -74,10 +91,11 @@ class UserAPI extends DataSource {
     if (!this.context || !this.context.user) return false;
     const userId = this.context.user.id;
     const found = await this.store.trips.findAll({
-      where: { userId, launchId },
+      where: { userId, launchId }
     });
     return found && found.length > 0;
   }
-}
+
+};
 
 module.exports = UserAPI;
